@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spot The Difference - Ultimate Challenge</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.img-wrap{position:relative;cursor:crosshair}
+.img-wrap img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.marker{position:absolute;width:36px;height:36px;border:3px solid #ff2d55;border-radius:50%;background:rgba(255,45,85,.2);transform:translate(-50%,-50%);pointer-events:none}
+.diff-dot{position:absolute;width:28px;height:28px;cursor:pointer;transform:translate(-50%,-50%);z-index:10}
+</style>
+</head>
+<body class="bg-[#0a0a12] text-white min-h-screen">
+<div class="max-w-6xl mx-auto p-4">
+<div class="text-center py-6">
+<h1 class="text-4xl md:text-6xl font-black">👀 SPOT THE <span style="color:#ff2d55">DIFFERENCE</span></h1>
+<p class="text-zinc-400 mt-2">Find 5 differences in 60 seconds! Are you human enough?</p>
+</div>
+<div class="flex justify-center gap-4 mb-4">
+<div class="bg-white/10 px-5 py-2 rounded-full">⏱️ <span id="timer">60</span>s</div>
+<div class="bg-white/10 px-5 py-2 rounded-full">⭐ Score: <span id="score">0</span>/5</div>
+<div class="bg-white/10 px-5 py-2 rounded-full">Level: <span id="level">1</span></div>
+<button onclick="nextLevel()" class="bg-pink-500 px-5 py-2 rounded-full font-bold">Next Image →</button>
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+<div class="img-wrap aspect-[4/3] bg-zinc-800" id="leftWrap">
+<img id="imgA" src="https://picsum.photos/seed/human1/800/600">
+<div style="position:absolute;bottom:8px;left:8px;background:black;padding:4px 12px;border-radius:20px;font-size:12px">ORIGINAL</div>
+</div>
+<div class="img-wrap aspect-[4/3] bg-zinc-800" id="rightWrap">
+<img id="imgB" src="https://picsum.photos/seed/human1/800/600" style="filter:hue-rotate(25deg) saturate(1.4)">
+<div style="position:absolute;bottom:8px;left:8px;background:black;padding:4px 12px;border-radius:20px;font-size:12px">SPOT 5 CHANGES</div>
+</div>
+</div>
+<div id="msg" class="text-center mt-4 text-xl font-bold"></div>
+<div class="text-center mt-2">
+<button onclick="startGame()" class="bg-white text-black px-8 py-3 rounded-full font-black">▶ START GAME</button>
+</div>
+<p class="text-center text-zinc-500 text-xs mt-6">Made for Bring Humans Again - Proving humans see better than AI</p>
+</div>
+<script>
+let found=0,time=60,timerInt,level=1;
+const diffs=[{x:20,y:30},{x:75,y:25},{x:50,y:55},{x:30,y:75},{x:80,y:70}];
+function startGame(){found=0;time=60;document.getElementById('score').innerText=0;document.getElementById('msg').innerText='';document.querySelectorAll('.marker').forEach(e=>e.remove());clearInterval(timerInt);timerInt=setInterval(()=>{time--;document.getElementById('timer').innerText=time;if(time<=0){clearInterval(timerInt);document.getElementById('msg').innerText='⏰ Time Up! Try Again!'}},1000);placeDots();}
+function placeDots(){document.querySelectorAll('.diff-dot').forEach(e=>e.remove());diffs.forEach(d=>{let dot=document.createElement('div');dot.className='diff-dot';dot.style.left=d.x+'%';dot.style.top=d.y+'%';dot.onclick=(e)=>foundIt(e,d);document.getElementById('rightWrap').appendChild(dot);});}
+function foundIt(e,d){if(e.target.dataset.done)return;e.target.dataset.done=1;found++;document.getElementById('score').innerText=found;let m=document.createElement('div');m.className='marker';m.style.left=d.x+'%';m.style.top=d.y+'%';document.getElementById('rightWrap').appendChild(m);let m2=m.cloneNode();document.getElementById('leftWrap').appendChild(m2);if(found===5){clearInterval(timerInt);document.getElementById('msg').innerText='🎉 YOU WIN! YOU ARE 100% HUMAN!';}}
+function nextLevel(){level++;document.getElementById('level').innerText=level;let seed='human'+level+Date.now();document.getElementById('imgA').src=`https://picsum.photos/seed/${seed}/800/600`;document.getElementById('imgB').src=`https://picsum.photos/seed/${seed}/800/600`;startGame();}
+placeDots();
+</script>
+</body>
+</html>
